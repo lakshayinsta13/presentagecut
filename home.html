@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>2% Cut Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 20px;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+
+    #result {
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>2% Cut Calculator</h2>
+
+    <input 
+      type="number" 
+      id="amount" 
+      placeholder="Enter Amount"
+      oninput="calculate()"
+    >
+
+    <p id="result"></p>
+  </div>
+
+  <script>
+    function calculate() {
+      let amount = Number(document.getElementById("amount").value);
+      let result = document.getElementById("result");
+
+      if (!amount || amount <= 0) {
+        result.innerText = "";
+        return;
+      }
+
+      let cut = amount * 2 / 100;
+      let finalAmount = amount - cut;
+
+      result.innerText =
+        "2% Cut: ₹" + cut.toFixed(2) +
+        "\nFinal Amount: ₹" + finalAmount.toFixed(2);
+    }
+  </script>
+
+</body>
+</html>
