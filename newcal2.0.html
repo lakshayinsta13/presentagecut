@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUCs Dashboard - Premium Edition</title>
+    <style>
+        :root {
+            --primary-blue: #1e293b;
+            --accent-blue: #3b82f6;
+            --primary-red: #ef4444;
+            --dark-red: #b91c1c;
+            --glass: rgba(255, 255, 255, 0.95);
+            --text-main: #0f172a;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .calculator-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            width: 95%;
+            max-width: 750px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            border: 1px solid white;
+        }
+
+        .top-bar {
+            background: var(--primary-blue);
+            padding: 25px;
+            text-align: center;
+            border-bottom: 5px solid var(--primary-red);
+        }
+
+        .top-bar h1 {
+            color: white;
+            margin: 0;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        /* Action Buttons */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-reset {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: var(--dark-red);
+            transform: translateY(-2px);
+        }
+
+        .btn-copy {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        /* Table Styling */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 15px;
+            text-align: left;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: #f0f7ff;
+        }
+
+        /* Result Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
+
+        .final-hero {
+            background: linear-gradient(135deg, var(--primary-blue), #0f172a);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            border-left: 8px solid var(--primary-red);
+        }
+
+        .final-hero label {
+            font-weight: 600;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+
+        .final-hero #final-result {
+            display: block;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-top: 10px;
+            color: #fff;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="calculator-card">
+        <div class="top-bar">
+            <h1>NUCs Analytics</h1>
+        </div>
+
+        <div class="main-content">
+            <div class="button-group">
+                <button class="btn btn-copy" onclick="copyValue()">📋 Copy Final Result</button>
+                <button class="btn btn-reset" onclick="resetCalculator()">🔄 Reset Form</button>
+            </div>
+
+            <div
+                style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; gap: 15px;">
+                <strong style="color: var(--primary-red);">DEAL MULTIPLIER:</strong>
+                <input type="number" id="deal" value="1.5" step="0.1" style="width: 100px;" oninput="updateAll()">
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Batch ID</th>
+                            <th>Total NUCs</th>
+                            <th>Applicable NUCs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-rows"></tbody>
+                </table>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card"><span class="stat-label">TOTAL (A)</span><span id="sum-a"
+                        class="stat-value">0</span></div>
+                <div class="stat-card"><span class="stat-label">APPL. (B)</span><span id="sum-b"
+                        class="stat-value">0</span></div>
+                <div class="stat-card"><span class="stat-label">RATIO (C)</span><span id="ratio-c"
+                        class="stat-value">0</span></div>
+                <div class="stat-card"><span class="stat-label">PERCENT (D)</span><span id="percent-d"
+                        class="stat-value">0%</span></div>
+            </div>
+
+            <div class="final-hero">
+                <label>FINAL SYSTEM CALCULATION</label>
+                <span id="final-result">0.0000</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const initData = {
+            total: [258, 3805, 257, 257, 3805, 258],
+            appl: [258, 3805, 0, 0, 3805, 258]
+        };
+
+        function renderTable() {
+            const container = document.getElementById('data-rows');
+            container.innerHTML = '';
+            for (let i = 0; i < initData.total.length; i++) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                <td style="font-weight: bold; color: var(--accent-blue);">#${String(i + 1).padStart(2, '0')}</td>
+                <td><input type="number" class="t-val" value="${initData.total[i]}" oninput="updateAll()"></td>
+                <td><input type="number" class="a-val" value="${initData.appl[i]}" oninput="updateAll()"></td>
+            `;
+                container.appendChild(tr);
+            }
+            updateAll();
+        }
+
+        function updateAll() {
+            const tInputs = document.querySelectorAll('.t-val');
+            const aInputs = document.querySelectorAll('.a-val');
+            const deal = parseFloat(document.getElementById('deal').value) || 0;
+
+            let totalA = 0, totalB = 0;
+            tInputs.forEach(el => totalA += parseFloat(el.value) || 0);
+            aInputs.forEach(el => totalB += parseFloat(el.value) || 0);
+
+            const ratioC = totalA > 0 ? totalB / totalA : 0;
+            const percentD = ratioC * 100;
+            const final = (percentD * deal) / 100;
+
+            document.getElementById('sum-a').innerText = totalA.toLocaleString();
+            document.getElementById('sum-b').innerText = totalB.toLocaleString();
+            document.getElementById('ratio-c').innerText = ratioC.toFixed(4);
+            document.getElementById('percent-d').innerText = percentD.toFixed(2) + '%';
+            document.getElementById('final-result').innerText = final.toFixed(4);
+        }
+
+        function resetCalculator() {
+            document.getElementById('deal').value = 1.5;
+            renderTable();
+        }
+
+        function copyValue() {
+            const val = document.getElementById('final-result').innerText;
+            navigator.clipboard.writeText(val);
+            alert("Copied: " + val);
+        }
+
+        window.onload = renderTable;
+    </script>
+
+</body>
+
+</html>
