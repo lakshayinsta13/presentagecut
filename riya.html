@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khurana Calculator - Riya Table</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f3f4f6; display: flex; justify-content: center; padding: 15px; margin: 0; }
+        .calc-card { background: white; width: 100%; max-width: 360px; border-radius: 20px; border: 4px solid #ef4444; box-shadow: 0 15px 35px rgba(0,0,0,0.2); overflow: hidden; position: relative; }
+        
+        /* Logo Image Styling */
+        .logo-container {
+            text-align: center;
+            padding: 20px 0 10px 0;
+            background: #ffffff; /* Logo ke white background se match karne ke liye change kiya */
+        }
+        .logo-img {
+            width: 100px;
+            height: auto; /* Logo ki shape barakarar rakhne ke liye auto kiya */
+            border-radius: 0; /* Square logo ke liye radius hataya */
+            object-fit: contain;
+        }
+
+        .header { background: #1e3a8a; color: white; padding: 15px; text-align: center; font-size: 1.3rem; font-weight: 900; text-transform: uppercase; border-top: 2px solid #ef4444; border-bottom: 2px solid #ef4444; }
+        .content { padding: 15px; }
+        .row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .row label { flex: 1; font-size: 0.8rem; font-weight: bold; color: #1e3a8a; }
+        .row input { width: 70px; padding: 7px; border: 2px solid #d1d5db; border-radius: 8px; text-align: center; font-weight: bold; }
+        
+        .btn-group { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+        button { flex: 1; min-width: 80px; padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: 800; color: white; font-size: 0.75rem; transition: 0.2s; }
+        .btn-blue { background: #1e3a8a; }
+        .btn-red { background: #ef4444; }
+        .btn-green { background: #10b981; }
+        .btn-gray { background: #64748b; }
+
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .res-item { font-size: 0.7rem; color: #64748b; font-weight: bold; }
+        .res-item b { display: block; color: #1e3a8a; font-size: 1rem; }
+
+        .final-box { background: #ef4444; color: white; text-align: center; padding: 15px; margin-top: 15px; border-radius: 15px; }
+        .final-box small { font-weight: bold; text-transform: uppercase; font-size: 0.7rem; }
+        .final-box span { font-size: 2.2rem; font-weight: 900; display: block; }
+    </style>
+</head>
+<body>
+
+<div class="calc-card">
+    <div class="logo-container">
+        <img src="image/riya.jpeg" alt="Riya Logo" class="logo-img">
+    </div>
+    
+    <div class="header">KHURANA CALC</div>
+    
+    <div class="content">
+        <div class="row" style="background: #fff1f2; padding: 10px; border-radius: 10px; margin-bottom: 15px;">
+            <label style="color: #be123c;">DEAL MULTIPLIER (%)</label>
+            <input type="number" id="deal" value="1.5" step="0.1" oninput="calc()">
+        </div>
+
+        <div id="input-area"></div>
+
+        <div class="btn-group">
+            <button class="btn-green" onclick="addRow()">+ ADD ROW</button>
+            <button class="btn-gray" onclick="removeRow()">- DELETE ROW</button>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-blue" onclick="copyVal()">COPY RESULT</button>
+            <button class="btn-red" onclick="resetAll()">RESET ALL</button>
+        </div>
+
+        <div class="result-grid">
+            <div class="res-item">TOTAL (A) <b id="sa">0</b></div>
+            <div class="res-item">APPL. (B) <b id="sb">0</b></div>
+            <div class="res-item">RATIO (C) <b id="rc">0</b></div>
+            <div class="res-item">PERC (D) <b id="pd">0%</b></div>
+        </div>
+
+        <div class="final-box">
+            <small>KHURANA FINAL RESULT</small>
+            <span id="final">0.0000</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let rowsData = [
+        { t: 258, a: 258 },
+        { t: 3805, a: 3805 },
+        { t: 257, a: 0 },
+        { t: 257, a: 0 },
+        { t: 3805, a: 3805 },
+        { t: 258, a: 258 }
+    ];
+
+    function render() {
+        const area = document.getElementById('input-area');
+        area.innerHTML = '';
+        rowsData.forEach((row, i) => {
+            const div = document.createElement('div');
+            div.className = 'row';
+            div.innerHTML = `
+                <label>Row ${i+1}</label>
+                <input type="number" class="ti" value="${row.t}" oninput="updateData(${i}, 't', this.value)">
+                <input type="number" class="ai" value="${row.a}" oninput="updateData(${i}, 'a', this.value)">`;
+            area.appendChild(div);
+        });
+        calc();
+    }
+
+    function updateData(index, field, value) {
+        rowsData[index][field] = parseFloat(value) || 0;
+        calc();
+    }
+
+    function addRow() {
+        rowsData.push({ t: 0, a: 0 });
+        render();
+    }
+
+    function removeRow() {
+        if (rowsData.length > 1) {
+            rowsData.pop();
+            render();
+        }
+    }
+
+    function calc() {
+        let sa = 0, sb = 0;
+        rowsData.forEach(row => {
+            sa += row.t;
+            sb += row.a;
+        });
+        
+        const deal = +document.getElementById('deal').value || 0;
+        const rc = sa ? (sb / sa) : 0;
+        const pd = rc * 100;
+        const res = rc * deal;
+
+        document.getElementById('sa').innerText = sa.toLocaleString();
+        document.getElementById('sb').innerText = sb.toLocaleString();
+        document.getElementById('rc').innerText = rc.toFixed(4);
+        document.getElementById('pd').innerText = pd.toFixed(2) + '%';
+        document.getElementById('final').innerText = res.toFixed(4);
+    }
+
+    function resetAll() {
+        document.getElementById('deal').value = 1.5;
+        rowsData = [{ t: 258, a: 258 }, { t: 3805, a: 3805 }, { t: 257, a: 0 }, { t: 257, a: 0 }, { t: 3805, a: 3805 }, { t: 258, a: 258 }];
+        render();
+    }
+
+    function copyVal() { 
+        const val = document.getElementById('final').innerText;
+        navigator.clipboard.writeText(val).then(() => {
+            alert("Result " + val + " Copied!");
+        });
+    }
+
+    window.onload = render;
+</script>
+
+</body>
+</html>
